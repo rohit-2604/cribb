@@ -1,52 +1,31 @@
-import { Stack } from "expo-router";
-import "../global.css"
-import {
-  FlatList,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-const properties = [
-  {
-    id: "1",
-    title: "Modern Villa",
-    city: "Mumbai",
-    price: "₹1.2Cr",
-  },
-  {
-    id: "2",
-    title: "Sea View Flat",
-    city: "Mumbai",
-    price: "₹85L",
-  },
-  {
-    id: "3",
-    title: "Studio Loft",
-    city: "Bangalore",
-    price: "₹32L",
-  },
-];
+import { ClerkProvider, ClerkLoaded, ClerkLoading } from "@clerk/expo";
+import { tokenCache } from "@clerk/expo/token-cache";
+import { Slot } from "expo-router";
+import { ActivityIndicator, View } from "react-native";
+import Toast from "react-native-toast-message";
+import "../global.css";
+
+const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
 
 export default function RootLayout() {
   return (
-    <SafeAreaView className="bg-white p-10 flex-1">
-      <View>
-        {/* <Text>Edit app/index.tsx to edit this screen.</Text> */}
-        <TextInput placeholder="Search City..." />
-        <TouchableOpacity onPress={() => alert("Searching!")}>
-          <Text>Search</Text>
-        </TouchableOpacity>
-      </View>
-      <FlatList data={properties} keyExtractor={(item)=>item.id} 
-        renderItem={({item})=>(
-          <View>
-            <Text >{item.title}</Text>
-            <Text >{item.city}</Text>
-            <Text >{item.price}</Text>
-          </View>
-        )}/>
-    </SafeAreaView>
+    <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
+      <ClerkLoading>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <ActivityIndicator size="large" color="#000" />
+        </View>
+      </ClerkLoading>
+
+      <ClerkLoaded>
+        <Slot />
+        <Toast />
+      </ClerkLoaded>
+    </ClerkProvider>
   );
 }
